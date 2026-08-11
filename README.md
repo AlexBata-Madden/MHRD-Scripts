@@ -1,3 +1,3 @@
 # MHRD-Scripts
 
-[Project Banner](assets/images/banner.png)
+![Project Banner](assets/images/banner.png)
