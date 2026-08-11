@@ -1,0 +1,61 @@
+Inputs: in1[4], in2[4], sel;
+Outputs: out[4];
+
+Parts:
+    nand1 NAND,
+    nand2 NAND,
+    nand3 NAND,
+    nand4 NAND,
+    nand5 NAND,
+    nand6 NAND,
+    nand7 NAND,
+    nand8 NAND,
+    nand9 NAND,
+    nand10 NAND,
+    nand11 NAND,
+    nand12 NAND,
+
+    not1 NOT;
+
+Wires:
+    sel -> not1.in,
+    
+    not1.out -> nand1.in1,
+    in1[1] -> nand1.in2,
+
+    sel -> nand2.in1,
+    in2[1] -> nand2.in2,
+
+    nand1.out -> nand3.in1,
+    nand2.out -> nand3.in2,
+    nand3.out -> out[1],
+
+    not1.out -> nand4.in1,
+    in1[2] -> nand4.in2,
+
+    sel -> nand5.in1,
+    in2[2] -> nand5.in2,
+
+    nand4.out -> nand6.in1,
+    nand5.out -> nand6.in2,
+    nand6.out -> out[2],
+
+    not1.out -> nand7.in1,
+    in1[3] -> nand7.in2,
+
+    sel -> nand8.in1,
+    in2[3] -> nand8.in2,
+
+    nand7.out -> nand9.in1,
+    nand8.out -> nand9.in2,
+    nand9.out -> out[3],
+
+    not1.out -> nand10.in1,
+    in1[4] -> nand10.in2,
+
+    sel -> nand11.in1,
+    in2[4] -> nand11.in2,
+
+    nand10.out -> nand12.in1,
+    nand11.out -> nand12.in2,
+    nand12.out -> out[4];
