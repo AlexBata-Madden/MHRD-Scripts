@@ -13,7 +13,7 @@ VS Code runs this script with -Watch. Each reported line has this shape:
 path:line:column rule-code explanation
 
 .PARAMETER Path
-Files or directories to check. By default, both circuit directories are scanned.
+Files or directories to check. By default, the whole repository is scanned.
 
 .PARAMETER Format
 Print human-readable text for VS Code, or JSON for another program to consume.
@@ -27,7 +27,7 @@ Wait this long after a file event so editors have time to finish saving the file
 [CmdletBinding()]
 param(
     [Parameter(Position = 0, ValueFromRemainingArguments = $true)]
-    [string[]]$Path = @('Logic Circuits', 'Advanced Circuits'),
+    [string[]]$Path = @('.'),
 
     [ValidateSet('text', 'json')]
     [string]$Format = 'text',
@@ -52,6 +52,10 @@ $settings = @{
     requireInterfaceOutputsLast = $true
 }
 
+# These folders contain repository tooling rather than MHRD circuit files. Paths
+# are compared using forward slashes because Get-RelativeLintPath normalises them.
+$ignoredPathPrefixes = @('.git/', '.vscode/', 'tools/', 'assets/')
+
 # VS Code needs paths relative to the open workspace to associate an error with
 # the correct editor tab. Forward slashes work consistently in its Problems panel.
 function Get-RelativeLintPath {
@@ -59,6 +63,17 @@ function Get-RelativeLintPath {
     $current = (Get-Location).Path.TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
     $relative = ([Uri]$current).MakeRelativeUri([Uri]$FullName).ToString()
     return [Uri]::UnescapeDataString($relative).Replace('\', '/')
+}
+
+# Return true for paths that belong to repository infrastructure rather than the
+# circuit source tree. This lets new top-level groups such as Memory work without
+# needing to update the linter each time.
+function Test-IgnoredLintPath {
+    param([string]$RelativePath)
+    foreach ($prefix in $ignoredPathPrefixes) {
+        if ($RelativePath.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) { return $true }
+    }
+    return $false
 }
 
 # Add one consistently shaped diagnostic to the shared list. The tasks.json
@@ -319,11 +334,15 @@ function Invoke-MhrdLint {
             # MHRD files in this repository have no extension. This avoids linting
             # README.md, images, PowerShell files, and VS Code configuration.
             foreach ($file in Get-ChildItem -LiteralPath $item.FullName -File -Recurse) {
-                if (-not $file.Extension) { $files.Add($file) }
+                $relative = Get-RelativeLintPath $file.FullName
+                if (-not $file.Extension -and -not (Test-IgnoredLintPath $relative)) {
+                    $files.Add($file)
+                }
             }
         }
         elseif (-not $item.Extension) {
-            $files.Add($item)
+            $relative = Get-RelativeLintPath $item.FullName
+            if (-not (Test-IgnoredLintPath $relative)) { $files.Add($item) }
         }
     }
 
@@ -387,8 +406,14 @@ if ($Watch) {
 
             # Wait without consuming CPU. Editors sometimes emit several events for
             # one save, so the short debounce combines them into one lint cycle.
-            $fileChangeEvent = Wait-Event
-            Remove-Event -EventIdentifier $fileChangeEvent.EventIdentifier
+            do {
+                $fileChangeEvent = Wait-Event
+                Remove-Event -EventIdentifier $fileChangeEvent.EventIdentifier
+                $changedPath = $fileChangeEvent.SourceEventArgs.FullPath
+                $changedRelativePath = Get-RelativeLintPath $changedPath
+                $isCircuitChange = -not [IO.Path]::GetExtension($changedPath) -and
+                    -not (Test-IgnoredLintPath $changedRelativePath)
+            } while (-not $isCircuitChange)
             Start-Sleep -Milliseconds $DebounceMilliseconds
             foreach ($pending in @(Get-Event)) {
                 Remove-Event -EventIdentifier $pending.EventIdentifier
