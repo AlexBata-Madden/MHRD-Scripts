@@ -16,7 +16,7 @@ Wires:
     in1 -> nand1.in1,
     in2 -> nand1.in2,
 
-    nand1.out -> nan2.in1,
+    nand1.out -> nand2.in1,
     nand1.out -> nand3.in1,
     in1 -> nand2.in2,
     in2 -> nand3.in2,

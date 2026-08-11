@@ -32,13 +32,13 @@ Wires:
     next2.out -> dff2.in,
 
     dff3.out -> out[3],
-    dff1.out -> keep3.in1,
+    dff3.out -> keep3.in1,
     notLoad.out -> keep3.in2,
     in[3] -> take3.in1,
     load -> take3.in2,
     keep3.out -> next3.in1,
     take3.out -> next3.in2,
-    next3.out -> dff1.in,
+    next3.out -> dff3.in,
 
     dff4.out -> out[4],
     dff4.out -> keep4.in1,
