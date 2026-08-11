@@ -17,7 +17,7 @@ Wires:
     nand2.out -> carry,
 
     nand1.out -> nand3.in1,
-    in1 -> nand3.in3,
+    in1 -> nand3.in2,
 
     nand1.out -> nand4.in1,
     in2 -> nand4.in2,

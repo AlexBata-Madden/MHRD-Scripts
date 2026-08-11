@@ -1,0 +1,15 @@
+Inputs: in, load;
+Outputs: out;
+
+Parts:
+    dff1 DFF,
+    mux1 MUX;
+
+Wires:
+    dff1.out -> out,
+    dff1.out -> mux1.in1,
+
+    in -> mux1.in2,
+    load -> mux1.sel,
+
+    mux1.out -> dff1.in;

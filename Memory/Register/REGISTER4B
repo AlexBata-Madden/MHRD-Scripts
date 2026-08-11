@@ -1,0 +1,50 @@
+Inputs: in[4], load;
+Outputs: out[4];
+
+Parts:
+    notLoad NAND,
+
+    keep1 NAND, take1 NAND, next1 NAND, dff1 DFF,
+    keep2 NAND, take2 NAND, next2 NAND, dff2 DFF,
+    keep3 NAND, take3 NAND, next3 NAND, dff3 DFF,
+    keep4 NAND, take4 NAND, next4 NAND, dff4 DFF;
+
+Wires:
+    load -> notLoad.in1,
+    load -> notLoad.in2,
+
+    dff1.out -> out[1],
+    dff1.out -> keep1.in1,
+    notLoad.out -> keep1.in2,
+    in[1] -> take1.in1,
+    load -> take1.in2,
+    keep1.out -> next1.in1,
+    take1.out -> next1.in2,
+    next1.out -> dff1.in,
+
+    dff2.out -> out[2],
+    dff2.out -> keep2.in1,
+    notLoad.out -> keep2.in2,
+    in[2] -> take2.in1,
+    load -> take2.in2,
+    keep2.out -> next2.in1,
+    take2.out -> next2.in2,
+    next2.out -> dff2.in,
+
+    dff3.out -> out[3],
+    dff3.out -> keep3.in1,
+    notLoad.out -> keep3.in2,
+    in[3] -> take3.in1,
+    load -> take3.in2,
+    keep3.out -> next3.in1,
+    take3.out -> next3.in2,
+    next3.out -> dff3.in,
+
+    dff4.out -> out[4],
+    dff4.out -> keep4.in1,
+    notLoad.out -> keep4.in2,
+    in[4] -> take4.in1,
+    load -> take4.in2,
+    keep4.out -> next4.in1,
+    take4.out -> next4.in2,
+    next4.out -> dff4.in;
