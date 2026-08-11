@@ -1,0 +1,13 @@
+Inputs: in1, in2;
+Outputs: out;
+
+Parts:
+    nand1 NAND,
+    not1 NOT;
+
+Wires:
+    in1 -> nand1.in1,
+    in2 -> nand1.in2,
+    
+    nand1.out -> not1.in,
+    not1.out -> out;
