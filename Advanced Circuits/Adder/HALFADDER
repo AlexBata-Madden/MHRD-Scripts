@@ -1,0 +1,28 @@
+Inputs: in1, in2;
+Outputs: out, carry;
+
+Parts:
+    nand1 NAND,
+    nand2 NAND,
+    nand3 NAND,
+    nand4 NAND,
+    nand5 NAND;
+
+Wires:
+    in1 -> nand1.in1,
+    in2 -> nand1.in2,
+
+    nand1.out -> nand2.in1,
+    nand1.out -> nand2.in2,
+    nand2.out -> carry,
+
+    nand1.out -> nand3.in1,
+    in1 -> nand3.in3,
+
+    nand1.out -> nand4.in1,
+    in2 -> nand4.in2,
+
+    nand3.out -> nand5.in1,
+    nand4.out -> nand5.in2,
+
+    nand5.out -> out;
