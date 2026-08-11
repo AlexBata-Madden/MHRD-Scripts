@@ -1,0 +1,10 @@
+Inputs: in;
+Outputs: out;
+
+Parts:
+    nand1 NAND;
+
+Wires: 
+    in -> nand1.in1,
+    in -> nand1.in2,
+    nand1.out -> out;
