@@ -1,0 +1,4 @@
+Interface Specification:
+------------------------
+Inputs: in1[4], in2[4];
+Outputs: out[4];
