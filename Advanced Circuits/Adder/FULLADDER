@@ -37,4 +37,4 @@ Wires:
     nand5.out -> nand9.in2,
     nand9.out -> carryOut,
 
-    nand8.out -> out,
+    nand8.out -> out;
