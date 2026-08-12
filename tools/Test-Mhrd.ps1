@@ -101,7 +101,12 @@ function Add-Issue {
 function Get-ContentLines {
     param([string]$Content)
     $normalized = $Content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $lines = @($normalized.Split("`n"))
+    # MHRD ignores everything from // to the end of a line. Strip comments while
+    # retaining the line itself so diagnostics still report the original number.
+    $lines = @($normalized.Split("`n") | ForEach-Object {
+        $commentStart = $_.IndexOf('//', [StringComparison]::Ordinal)
+        if ($commentStart -ge 0) { $_.Substring(0, $commentStart) } else { $_ }
+    })
     while ($lines.Count -gt 0 -and $lines[$lines.Count - 1] -eq '') {
         if ($lines.Count -eq 1) { return @() }
         $lines = @($lines[0..($lines.Count - 2)])
