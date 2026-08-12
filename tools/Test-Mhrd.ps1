@@ -101,7 +101,12 @@ function Add-Issue {
 function Get-ContentLines {
     param([string]$Content)
     $normalized = $Content.Replace("`r`n", "`n").Replace("`r", "`n")
-    $lines = @($normalized.Split("`n"))
+    # MHRD ignores everything from // to the end of a line. Strip comments while
+    # retaining the line itself so diagnostics still report the original number.
+    $lines = @($normalized.Split("`n") | ForEach-Object {
+        $commentStart = $_.IndexOf('//', [StringComparison]::Ordinal)
+        if ($commentStart -ge 0) { $_.Substring(0, $commentStart) } else { $_ }
+    })
     while ($lines.Count -gt 0 -and $lines[$lines.Count - 1] -eq '') {
         if ($lines.Count -eq 1) { return @() }
         $lines = @($lines[0..($lines.Count - 2)])
@@ -331,8 +336,8 @@ function Invoke-MhrdLint {
         }
         $item = Get-Item -LiteralPath $inputPath
         if ($item.PSIsContainer) {
-            # MHRD files in this repository have no extension. This avoids linting
-            # README.md, images, PowerShell files, and VS Code configuration.
+            # Only extensionless MHRD files are linted. Markdown theory notes and
+            # every other file with an extension are ignored automatically.
             foreach ($file in Get-ChildItem -LiteralPath $item.FullName -File -Recurse) {
                 $relative = Get-RelativeLintPath $file.FullName
                 if (-not $file.Extension -and -not (Test-IgnoredLintPath $relative)) {

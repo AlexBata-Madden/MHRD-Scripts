@@ -8,15 +8,35 @@ Parts:
     nand4 NAND;
 
 Wires:
+    // Let A = in1 and B = in2
+    // XOR(A, B) = X OR Y, where X = A AND NOT B and Y = NOT A AND B
+    // p = NAND(A, B) = NOT(A AND B) = NOT A OR NOT B.
     in1 -> nand1.in1,
-    in1 -> nand2.in1,
-
     in2 -> nand1.in2,
+
+    // q = NAND(A, p) = NOT(A AND p)
+    //                = NOT(A AND (NOT A OR NOT B))
+    //                = NOT((A AND NOT A) OR (A AND NOT B))
+    //                = NOT(0 OR (A AND NOT B))
+    //                = NOT(A AND NOT B)
+    //                = NOT(X)
+    in1 -> nand2.in1,
+    nand1.out -> nand2.in2,
+
+    // r = NAND(B, p) = NOT(B AND p)
+    //                = NOT(B AND (NOT A OR NOT B))
+    //                = NOT((B AND NOT A) OR (B AND NOT B))
+    //                = NOT((NOT A AND B) OR 0)
+    //                = NOT(NOT A AND B)
+    //                = NOT Y
+    nand1.out -> nand3.in1,
     in2 -> nand3.in2,
 
-    nand1.out -> nand2.in2,
-    nand1.out -> nand3.in1,
-
+    // NAND(q, r) = NOT(q AND r) 
+    //            = NOT(NOT X AND NOT Y)
+    //            = X OR Y
+    //            = (A AND NOT B) OR (NOT A AND B)
+    //            = XOR(A, B)
     nand2.out -> nand4.in1,
     nand3.out -> nand4.in2,
 
