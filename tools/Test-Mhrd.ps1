@@ -331,8 +331,8 @@ function Invoke-MhrdLint {
         }
         $item = Get-Item -LiteralPath $inputPath
         if ($item.PSIsContainer) {
-            # MHRD files in this repository have no extension. This avoids linting
-            # README.md, images, PowerShell files, and VS Code configuration.
+            # Only extensionless MHRD files are linted. Markdown theory notes and
+            # every other file with an extension are ignored automatically.
             foreach ($file in Get-ChildItem -LiteralPath $item.FullName -File -Recurse) {
                 $relative = Get-RelativeLintPath $file.FullName
                 if (-not $file.Extension -and -not (Test-IgnoredLintPath $relative)) {
